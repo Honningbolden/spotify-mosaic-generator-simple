@@ -16,29 +16,29 @@ interface AlbumCover {
 export default function Canvas() {
   const [albumCovers, setAlbumCovers] = useState<AlbumCover[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const fetchPromises = [];
-      for (let i = 0; i < 2; i++) {
-        fetchPromises.push(getAlbumCovers(50 * i));
-      }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const fetchPromises = [];
+  //     for (let i = 0; i < 2; i++) {
+  //       fetchPromises.push(getAlbumCovers(50 * i));
+  //     }
 
-      const results = await Promise.all(fetchPromises);
-      const combinedData = results.flat();
+  //     const results = await Promise.all(fetchPromises);
+  //     const combinedData = results.flat();
 
-      console.log(combinedData);
-      setAlbumCovers(combinedData);
-    };
-    fetchData();
-  }, [])
+  //     console.log(combinedData);
+  //     setAlbumCovers(combinedData);
+  //   };
+  //   fetchData();
+  // }, [])
 
-  const images = albumCovers.map((cover) => cover.album.images[0].url);
+  // const images = albumCovers.map((cover) => cover.album.images[0].url);
 
   return (
     <div>
-      {images.map((url, index) => {
+      {/* {images.map((url, index) => {
         return <img key={index} src={url} />
-      })}
+      })} */}
     </div>
   );
 }
