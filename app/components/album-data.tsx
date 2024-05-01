@@ -2,8 +2,14 @@
 
 const token = process.env.TOKEN;
 
-export default async function getAlbumCovers() {
-  const res = await fetch("https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=50", {
+export default async function getAlbumCovers(offset: number) {
+  const params = new URLSearchParams({
+    time_range: "long_term",
+    limit: "50",
+    offset: offset.toString(),
+  })
+
+  const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?${params}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

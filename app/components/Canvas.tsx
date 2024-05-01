@@ -18,9 +18,16 @@ export default function Canvas() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAlbumCovers();
-      console.log(data);
-      setAlbumCovers(data);
+      const fetchPromises = [];
+      for (let i = 0; i < 2; i++) {
+        fetchPromises.push(getAlbumCovers(50 * i));
+      }
+
+      const results = await Promise.all(fetchPromises);
+      const combinedData = results.flat();
+
+      console.log(combinedData);
+      setAlbumCovers(combinedData);
     };
     fetchData();
   }, [])
