@@ -1,39 +1,37 @@
 "use client"
 
 import { useEffect, useState } from "react";
+import getAlbumCovers from "./album-data";
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUrl = process.env.SPOTIFY_REDIRECT_URL;
 
-const token = process.env.NEXT_PUBLIC_TOKEN;
-
-async function getAlbumCovers() {
-  const res = await fetch("https://api.spotify.com/v1/me/top/tracks", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  const data = await res.json();
-
-  return data;
-}
+interface AlbumCover {
+  album: {
+    images: { url: string }[];
+  };
+};
 
 export default function Canvas() {
-  const [albumData, setAlbumData] = useState(null);
+  const [albumCovers, setAlbumCovers] = useState<AlbumCover[]>([]);
 
   useEffect(() => {
-    getAlbumCovers().then(data => {
+    const fetchData = async () => {
+      const data = await getAlbumCovers();
       console.log(data);
-      setAlbumData(data);
-    })
+      setAlbumCovers(data);
+    };
+    fetchData();
   }, [])
+
+  const images = albumCovers.map((cover) => cover.album.images[0].url);
 
   return (
     <div>
-      <h1>test</h1>
+      {images.map((url, index) => {
+        return <img key={index} src={url} />
+      })}
     </div>
   );
 }
