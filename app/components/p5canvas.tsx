@@ -17,9 +17,11 @@ export default function P5Sketch() {
     const customPreload = async (token) => {
       console.log("token is ", token)
 
+      const tempToken = localStorage.getItem("access_token");
+
       const fetchPromises = [];
       for (let i = 0; i < 1; i++) {
-        fetchPromises.push(getAlbumCovers("BQA2uJB80fmr0DGlkH_Tz04JCB1lWrn_RGANTjxdbwesL5LW3u-WN08C0ywVY8yVSGzSxIb3CS-JdZzPDtiBcpUeUkjh_zaMuRo1eWycFMe9ok0tqPe6YQQSgpdvN1sVGlkp8omOZF_B_hX3diSxZqjm6IDlz_Rv-0W7Du1kxTz_ksGhUj0Z", 50 * i));
+        fetchPromises.push(getAlbumCovers(tempToken, 50 * i));
       }
     
       const results = await Promise.all(fetchPromises);
