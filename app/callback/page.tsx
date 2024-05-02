@@ -58,7 +58,6 @@ export default function Page() {
   return (
     <div>
       <h1>You'll be redirected back soon.</h1>
-      <p>{state}</p>
     </div>
   )
 }
