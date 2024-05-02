@@ -1,9 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import P5Sketch from "./p5canvas";
+// import P5Sketch from "./p5canvas";
 import Login from "./LoginComponent";
 import { useSearchParams } from "next/navigation";
+
+import dynamic from 'next/dynamic';
+
+const P5Sketch = dynamic(() => import('./p5canvas'), { ssr: false });
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
