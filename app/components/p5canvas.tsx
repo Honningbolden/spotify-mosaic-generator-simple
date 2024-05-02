@@ -3,6 +3,11 @@
 import p5 from "p5";
 import { ReactP5Wrapper, Sketch, SketchProps } from "react-p5-wrapper";
 import getAlbumCovers from "./album-data";
+import { useState } from "react";
+
+let hasRun = false;
+
+
 
 const sketch: Sketch = p5 => {
   let preloadDone = false;
@@ -10,51 +15,64 @@ const sketch: Sketch = p5 => {
   const MAX_DEPTH = 5;
   let bgImg;
   let albumCovers = [];
-
   
-
-  p5.preload = () => {
-    let images;
-
-    (async () => {
-      const fetchPromises = [];
-      for (let i = 0; i < 1; i++) {
-        fetchPromises.push(getAlbumCovers(50 * i));
-      }
+  const customPreload = async () => {
+    const fetchPromises = [];
+    for (let i = 0; i < 1; i++) {
+      fetchPromises.push(getAlbumCovers(50 * i));
+    }
   
-      const results = await Promise.all(fetchPromises);
-      const combinedData = results.flat();
-      images = combinedData.map((cover) => cover.album.images[0].url);
-      console.log("done fetching");
-    })();
-
-    console.log("images download");
-    console.log(images);
-
-    bgImg = p5.loadImage("/images/background.png", (img) => {
-      bgImg = img;
-      bgImg.loadPixels();
-      console.log("bgImg", bgImg)
+    const results = await Promise.all(fetchPromises);
+    const combinedData = results.flat();
+    const images = combinedData.map((cover) => cover.album.images[0].url);
+  
+    console.log("done fetching");
+  
+    bgImg = await new Promise((resolve) => {
+      p5.loadImage("/images/background.png", (img) => {
+        img.loadPixels();
+        resolve(img);
+      });
     });
-
+  
     for (let i = 1; i < images.length; i++) {
       albumCovers.push(
-        p5.loadImage(images[i], (img) => {
-          img.loadPixels();
-          img.average = calcAverageColor(img.pixels);
-          img.usageCount = 0;
+        await new Promise((resolve) => {
+          p5.loadImage(images[i], (img) => {
+            img.loadPixels();
+            img.average = calcAverageColor(img.pixels);
+            img.usageCount = 0;
+            // console.log("img.average", img.average);
+            resolve(img);
+          });
         })
       );
     }
-  }
+  
+    preloadDone = true;
+  };
+  
+  p5.preload = () => {
+    customPreload();
+  };
 
   p5.setup = () => {
-    p5.createCanvas(1024, 1024);
+    if (!hasRun) {
+      const checkPreload = setInterval(() => {
+        if (preloadDone) {
+          clearInterval(checkPreload);
+          
+          p5.createCanvas(1024, 1024);
+  
+          let quadtree = new Quadtree(0, 0, p5.width, p5.height);
+          quadtree.splitIfNeeded();
+          quadtree.display();
+        }
+      }, 100);
+      hasRun = true;
+    }
+  };
 
-    let quadtree = new Quadtree(0, 0, p5.width, p5.height);
-    quadtree.splitIfNeeded();
-    quadtree.display();
-  }
 
   // calcColorValues
   const calcAverageColor = (pixels: number[]) => {
@@ -159,7 +177,9 @@ const sketch: Sketch = p5 => {
       return colors.some((subColor) => this.colorDifference(subColor, avg) > this.threshold);
     }
 
-    colorDifference(c1: p5.Color, c2: p5.Color): number {
+    colorDifference(c1, c2): number {
+      // console.log('c1:', c1);
+      // console.log('c2:', c2);
       let d = p5.dist(p5.red(c1), p5.green(c1), p5.blue(c1), p5.red(c2), p5.green(c2), p5.blue(c2));
       return d;
     }
