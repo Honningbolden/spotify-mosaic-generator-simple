@@ -3,6 +3,7 @@
 import p5 from "p5";
 import { ReactP5Wrapper, Sketch, SketchProps } from "react-p5-wrapper";
 import getAlbumCovers from "./album-data";
+import { Suspense } from "react";
 
 let hasRun = false;
 
@@ -239,5 +240,9 @@ export default function P5Sketch() {
   }
 
 
-  return <ReactP5Wrapper sketch={sketch} />;
+  return (
+    <Suspense fallback={<div>fucking work</div>}>
+      <ReactP5Wrapper sketch={sketch} />
+    </Suspense>
+  );
 }
