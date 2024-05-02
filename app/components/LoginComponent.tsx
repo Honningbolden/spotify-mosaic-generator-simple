@@ -8,8 +8,8 @@ export default function LoginComponent() {
     const state = generateRandomString(16);
     localStorage.setItem("spotify_auth_state", state);
 
-    const clientId = "84cf98ed4e4b49a193ad6de44bb7929c";
-    const redirectUri = "http://localhost:3000/callback";
+    const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
+    const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URL;
     const scope = encodeURIComponent("user-top-read");
 
     const authUrl = "https://accounts.spotify.com/authorize?" +
