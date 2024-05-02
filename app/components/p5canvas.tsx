@@ -2,37 +2,47 @@
 
 import p5 from "p5";
 import { ReactP5Wrapper, Sketch, SketchProps } from "react-p5-wrapper";
+import getAlbumCovers from "./album-data";
 
-type MySketchProps = SketchProps & {
-  images: string[];
-};
-
-const sketch: Sketch<MySketchProps> = p5 => {
-
-  let images;
+const sketch: Sketch = p5 => {
+  let preloadDone = false;
 
   const MAX_DEPTH = 5;
   let bgImg;
   let albumCovers = [];
 
+  
+
   p5.preload = () => {
-    console.log("this is p5. images is ");
-    console.log(images)
+    let images;
+
+    (async () => {
+      const fetchPromises = [];
+      for (let i = 0; i < 1; i++) {
+        fetchPromises.push(getAlbumCovers(50 * i));
+      }
+  
+      const results = await Promise.all(fetchPromises);
+      const combinedData = results.flat();
+      images = combinedData.map((cover) => cover.album.images[0].url);
+      console.log("done fetching");
+    })();
+
+    console.log("images download");
+    console.log(images);
 
     bgImg = p5.loadImage("/images/background.png", (img) => {
       bgImg = img;
       bgImg.loadPixels();
-      console.log("bgImg.pixels is");
-      console.log(bgImg.pixels);
+      console.log("bgImg", bgImg)
     });
 
-    for (let i = 1; i < 87; i++) {
+    for (let i = 1; i < images.length; i++) {
       albumCovers.push(
-        p5.loadImage(`/images/File ${i}.jpeg`, (img) => {
+        p5.loadImage(images[i], (img) => {
           img.loadPixels();
           img.average = calcAverageColor(img.pixels);
           img.usageCount = 0;
-          console.log("img.usageCount", img.usageCount);
         })
       );
     }
@@ -157,10 +167,10 @@ const sketch: Sketch<MySketchProps> = p5 => {
     splitIfNeeded(): void {
       let colorChange = this.checkColorVariance();
       if (this.depth < MAX_DEPTH && colorChange) {
-        console.log("Splitting due to significant color variance");
+        // console.log("Splitting due to significant color variance");
         this.subdivide();
       } else {
-        console.log("No significant variance or max depth reached, assigning cover");
+        // console.log("No significant variance or max depth reached, assigning cover");
         this.image = this.findClosestAlbumCover();
       }
     }
@@ -186,7 +196,7 @@ const sketch: Sketch<MySketchProps> = p5 => {
         closestCover.usageCount++;
       }
 
-      console.log("closestCover", closestCover, closestCover.usageCount);
+      // console.log("closestCover", closestCover, closestCover.usageCount);
       return closestCover;
     }
 
@@ -202,6 +212,6 @@ const sketch: Sketch<MySketchProps> = p5 => {
   }
 }
 
-export default function P5Sketch(images: string[]) {
-  return <ReactP5Wrapper sketch={sketch} images={images} />;
+export default function P5Sketch() {
+  return <ReactP5Wrapper sketch={sketch} />;
 }

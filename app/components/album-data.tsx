@@ -8,7 +8,7 @@ export default async function getAlbumCovers(offset: number) {
     limit: "50",
     offset: offset.toString(),
   })
-
+  
   const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?${params}`, {
     method: "GET",
     headers: {
