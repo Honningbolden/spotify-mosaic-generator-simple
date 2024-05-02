@@ -46,7 +46,7 @@ export default function Canvas() {
 
   return (
     <div>
-      <P5Sketch/>
+      {/* <P5Sketch/> */}
       {/* {images.map((url, index) => {
         return <img key={index} src={url} />
       })} */}
