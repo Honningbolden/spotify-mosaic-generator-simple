@@ -14,10 +14,12 @@ export default function P5Sketch() {
     let bgImg;
     let albumCovers = [];
     
-    const customPreload = async () => {
+    const customPreload = async (token) => {
+      console.log("token is ", token)
+
       const fetchPromises = [];
       for (let i = 0; i < 1; i++) {
-        fetchPromises.push(getAlbumCovers(50 * i));
+        fetchPromises.push(getAlbumCovers("BQA2uJB80fmr0DGlkH_Tz04JCB1lWrn_RGANTjxdbwesL5LW3u-WN08C0ywVY8yVSGzSxIb3CS-JdZzPDtiBcpUeUkjh_zaMuRo1eWycFMe9ok0tqPe6YQQSgpdvN1sVGlkp8omOZF_B_hX3diSxZqjm6IDlz_Rv-0W7Du1kxTz_ksGhUj0Z", 50 * i));
       }
     
       const results = await Promise.all(fetchPromises);
@@ -51,7 +53,11 @@ export default function P5Sketch() {
     };
     
     p5.preload = () => {
-      customPreload();
+      const token = localStorage.getItem("access_token");
+      console.log("p5Canvas fetching access_token", token)
+      if (token) {
+        customPreload(token);
+      }
     };
   
     p5.setup = () => {

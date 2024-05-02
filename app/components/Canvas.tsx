@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import getAlbumCovers from "./album-data";
 import P5Sketch from "./p5canvas";
+import Login from "./LoginComponent";
+import { useSearchParams } from "next/navigation";
 
 const clientId = process.env.SPOTIFY_CLIENT_ID;
 const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -15,41 +16,33 @@ interface AlbumCover {
 };
 
 export default function Canvas() {
-  const [albumCovers, setAlbumCovers] = useState<AlbumCover[]>([]);
-  const [loading, setLoading] = useState(true); // Add this line
+  const redirected = useSearchParams().get("redirected") !== null;
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Add this line
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  //     const fetchPromises = [];
-  //     for (let i = 0; i < 2; i++) {
-  //       fetchPromises.push(getAlbumCovers(50 * i));
-  //     }
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    if (token && redirected) {
+      setIsLoggedIn(true);
+    }
+  })
 
-  //     const results = await Promise.all(fetchPromises);
-  //     const combinedData = results.flat();
+  const handleLogin = () => {
+    setIsLoggingIn(true);
+  }
 
-  //     console.log(combinedData);
-  //     setAlbumCovers(combinedData);
-  //     setLoading(false);
-  //   };
-  //   fetchData();
-  // }, [])
-
-  // const images = albumCovers.map((cover) => cover.album.images[0].url);
-  // console.log("images is", images);
-
-  // if (loading) {
-  //   return <div>Loading...</div>
-  // }
+  if (isLoggingIn) {
+    return <Login/>;
+  }
 
   return (
-    <div>
-      {/* <P5Sketch/> */}
-      {/* {images.map((url, index) => {
-        return <img key={index} src={url} />
-      })} */}
-    </div>
+    <main>
+      {isLoggedIn ?
+        <P5Sketch />
+        :
+        <button onClick={handleLogin}>Log in with Spotify</button>
+      }
+    </main>
   );
 }
