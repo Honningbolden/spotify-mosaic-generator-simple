@@ -18,7 +18,8 @@ export default function P5Sketch() {
     const customPreload = async (token: any) => {
       console.log("token is ", token)
 
-      const tempToken: any = localStorage.getItem("access_token");
+      // const tempToken: any = localStorage.getItem("access_token");
+      const tempToken: any = process.env.NEXT_PUBLIC_SPOTIFY_ACCESS_TOKEN;
 
       const fetchPromises = [];
       for (let i = 0; i < 1; i++) {
