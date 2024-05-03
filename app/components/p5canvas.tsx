@@ -22,7 +22,7 @@ export default function P5Sketch() {
       const tempToken: any = process.env.NEXT_PUBLIC_SPOTIFY_ACCESS_TOKEN;
 
       const fetchPromises = [];
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 3; i++) {
         fetchPromises.push(getAlbumCovers(tempToken, 50 * i));
       }
 
